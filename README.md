@@ -1,30 +1,34 @@
-# vue-carousel
+vue图片轮播组件
+------
+npm i @yaozewei/vue-carousel
+------
 
-> A Vue.js project
-
-## Build Setup
-
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-
-# run unit tests
-npm run unit
-
-# run e2e tests
-npm run e2e
-
-# run all tests
-npm test
 ```
+<template>
+    <div>
+        <Carousel :carouselOption="carouselOption"> </Carousel>
+    </div>
+</template>
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+import Vue from 'vue'
+import Carousel from '@yaozewei/vue-carousel'
+Vue.use(Carousel)
+
+export default {
+    data () {
+        return {
+             carouselOption:{
+                carouselWidth: 600,   // 轮播宽度
+                carouselHeight: 400,  // 轮播高度
+                carouselImages: [     // 轮播图片列表
+                    '',
+                ],
+                showCarouselArrow: true,  // 是否显示轮播箭头
+                showCarouselDot: true,    // 是否显示轮播圆点
+                carouselInterval: 3000,   // 轮播自动播放间隔
+                carouselAnimateTime: 200, // 轮播动画时间
+            },
+        }
+    }
+}
+```

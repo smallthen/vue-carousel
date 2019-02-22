@@ -27,10 +27,7 @@ export default {
                 carouselAnimateTime: 200, // 轮播动画时间
             },
         }
-    },
-    components: {
-
-    },
+    }
 }
 </script>
 
