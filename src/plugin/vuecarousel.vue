@@ -1,11 +1,11 @@
 <template>
   <div class="vueCarousel carousel-container" :style="carouselContainer" @mouseenter="enter()" @mouseleave="leave()">
     <div class="carousel-wrap" :style="carouselWrap">
-      <img class="carousel-image" :src="item" :alt="index+1" v-for="(item,index) in carouselOption.carouselImages" :key="index" :style="carouselContainer">
+      <img class="carousel-image" :src="item" :alt="index+1" v-for="(item,index) in carouselImagesMore" :key="index" :style="carouselContainer">
     </div>
     <div class="carousel-buttons-wrap" v-if="carouselOption.showCarouselDot">
       <div class="carousel-buttons">
-        <span class="carousel-button" :class="(index+1) === carouselIndex?'on':''" v-for="(item,index) in carouselOption.carouselImages" :key="index" @click="clickDot(index)"></span>
+        <span class="carousel-button" :class="(index+1) === carouselIndex?'on':''" v-for="(item,index) in carouselImagesHear" :key="index" @click="clickDot(index)"></span>
       </div>
     </div>
     <div href="javascript:;" class="carousel-arrow arrow-left" v-if="carouselOption.showCarouselArrow" @click="prev()">&lt;</div>
@@ -32,14 +32,17 @@ export default {
           showCarouselArrow: true,  // 是否显示轮播箭头
           showCarouselDot: true,    // 是否显示轮播圆点
           carouselInterval: 3000,   // 轮播自动播放间隔
-          carouselAnimateTime: 200, // 轮播动画时间
+          carouselAnimateTime: 100, // 轮播动画时间
         }
       },
   },
   data() {
     return {
       carouselIndex:1,
-      carouselLeft:0
+      carouselLeft:0,
+      carouselImagesHear:[],
+      time:0,
+      carouselImagesMore:[]
     }
   },
   computed: {
@@ -50,42 +53,109 @@ export default {
     },
     carouselWrap() {
       return {
-        width:this.carouselOption.carouselImages.length*this.carouselOption.carouselWidth+'px',
+        width:(this.carouselOption.carouselImages.length+2)*this.carouselOption.carouselWidth+'px',
         transform:"translate3d("+this.carouselLeft + "px, 0px, 0px)",
-        transition:"all "+this.carouselOption.carouselAnimateTime+"ms"
+        "-webkit-transition":this.time+"ms",
+        "-moz-transition":this.time+"ms",
+        "transition":this.time+"ms",
       }
     }
   },
   mounted(){
+    this.setDot();
     this.autooplay();
   },
   methods:{
+    setDot(){
+      let carouselImages=this.carouselOption.carouselImages;
+      for (let a in carouselImages){
+        this.carouselImagesHear.push(a)
+      }
+      for (let a of carouselImages){
+        this.carouselImagesMore.push(a)
+      }
+      this.carouselImagesMore.unshift(carouselImages[carouselImages.length-1]);
+      this.carouselImagesMore.push(carouselImages[0]);
+      this.carouselLeft=-this.carouselOption.carouselWidth;
+    },
     autooplay(){
       t=setInterval(() => {
         this.next();
       }, this.carouselOption.carouselInterval);
     },
     next(){
+      const _this=this;
+      this.time=this.carouselOption.carouselAnimateTime;
+      let images=this.carouselOption.carouselImages;
+      this.carouselLeft=parseInt(this.carouselLeft)-parseInt(this.carouselOption.carouselWidth);
       if (this.carouselIndex > this.carouselOption.carouselImages.length-1) {
-        this.carouselIndex = 1;
-        this.carouselLeft=0;
+        setTimeout(() => {
+          _this.time=0;
+          _this.carouselLeft=-_this.carouselOption.carouselWidth;
+          _this.resetMoveCarousel(1);
+          _this.carouselIndex = 1;
+        }, 100);
       }else{
         this.carouselIndex++;
-        this.carouselLeft=parseInt(this.carouselLeft)-parseInt(this.carouselOption.carouselWidth);
       }
     },
     prev(){
-      if (this.carouselIndex==1) {
-        this.carouselIndex = this.carouselOption.carouselImages.length;
-        this.carouselLeft=parseInt(-(this.carouselOption.carouselImages.length-1)*this.carouselOption.carouselWidth);
+      const _this=this;
+      let images=this.carouselOption.carouselImages;
+      this.time=this.carouselOption.carouselAnimateTime;
+      if (this.carouselIndex<1) {
+        setTimeout(() => {
+          _this.time=0;
+          _this.carouselLeft=parseInt(-(_this.carouselOption.carouselImages.length)*_this.carouselOption.carouselWidth);
+          _this.resetMoveCarousel(_this.carouselOption.carouselImages.length-1);
+          _this.carouselIndex = _this.carouselOption.carouselImages.length-1;
+        }, 100);
       }else{
         this.carouselIndex--;
         this.carouselLeft=parseInt(this.carouselLeft)+parseInt(this.carouselOption.carouselWidth);
       }
     },
     clickDot(e){
-      this.carouselIndex = e+1;
-      this.carouselLeft=parseInt(-e*this.carouselOption.carouselWidth);
+      const _this=this;
+      this.time=this.carouselOption.carouselAnimateTime;
+      let images=this.carouselImagesMore;
+      if(e+1>this.carouselIndex){
+        images.splice(this.carouselIndex+1,0,images[e+1]);
+        this.carouselImagesMore=images;
+        this.carouselLeft=parseInt(this.carouselLeft) - parseInt(this.carouselOption.carouselWidth);
+
+        this.resetMoveCarousel(e+1,this.carouselIndex+1);
+        _this.carouselIndex = e+1;
+      }else if(e<this.carouselIndex){
+        images.splice(this.carouselIndex,0,images[e+1]);
+        this.time=0;
+        this.carouselImagesMore=images;
+        this.carouselLeft=parseInt(this.carouselLeft) - parseInt(this.carouselOption.carouselWidth);
+        setTimeout(() => {
+          _this.time=_this.carouselOption.carouselAnimateTime;
+          console.log(_this.time);
+          _this.carouselLeft=parseInt(_this.carouselLeft) + parseInt(_this.carouselOption.carouselWidth);
+          _this.resetMoveCarousel(e+1,_this.carouselIndex);
+          _this.carouselIndex = e+1;
+        }, 10);
+
+      }
+    },
+    resetMoveCarousel(e,f){
+      const _this=this;
+      setTimeout(() => {
+        let images=_this.carouselImagesMore;
+        if(f){
+          _this.time=0;
+          images.splice(f,1);
+        }else{
+          _this.time=_this.carouselOption.carouselAnimateTime;
+        }
+        console.log(f);
+
+        _this.carouselLeft=parseInt(-e*_this.carouselOption.carouselWidth);
+        _this.carouselImagesMore=images;
+      }, _this.carouselOption.carouselAnimateTime);
     },
     enter(){
       clearInterval(t);

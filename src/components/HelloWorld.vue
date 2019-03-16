@@ -6,8 +6,8 @@
 
 <script>
 import Vue from 'vue'
-// import Carousel from '../plugin/vuecarousel.js'
-import Carousel from '../../dist/vuecarousel.js'
+import Carousel from '../plugin/vuecarousel.js'
+// import Carousel from '../../dist/vuecarousel.js'
 Vue.use(Carousel)
 export default {
     data () {
