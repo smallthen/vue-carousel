@@ -1,6 +1,6 @@
 {
   "name": "@yaozewei/vue-carousel",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A Vue.js project",
   "author": "zhaowendao <244636432@qq.com>",
   "keywords": [
@@ -17,6 +17,7 @@
     "dist": "webpack --config build/webpack.dist.config.js"
   },
   "dependencies": {
+    "eslint": "^5.15.3",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },
